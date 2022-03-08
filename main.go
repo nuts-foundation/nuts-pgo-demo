@@ -77,14 +77,14 @@ func main() {
 	e.HTTPErrorHandler = httpErrorHandler
 
 	// Initialize Auth
-	//var account api.UserAccount
-	//if config.Credentials.Empty() {
-	//	account = generateDefaultAccount(config)
-	//	log.Printf("Authentication credentials not configured, so they were generated (user=%s, password=%s)", account.Username, account.Password)
-	//} else {
-	//	account = api.UserAccount{Username: config.Credentials.Username, Password: config.Credentials.Password}
-	//}
-	//auth := api.NewAuth(config.sessionKey, []api.UserAccount{account})
+	var account api.UserAccount
+	if config.Credentials.Empty() {
+		account = generateDefaultAccount(config)
+		log.Printf("Authentication credentials not configured, so they were generated (user=%s, password=%s)", account.Username, account.Password)
+	} else {
+		account = api.UserAccount{Username: config.Credentials.Username, Password: config.Credentials.Password}
+	}
+	auth := api.NewAuth(config.sessionKey, []api.UserAccount{account})
 	//
 	//// Initialize repos
 	//vdrClient := vdrAPI.HTTPClient{
@@ -113,10 +113,10 @@ func main() {
 	//	DIDManClient: didmanClient,
 	//}
 	//
-	//// Initialize wrapper
-	//apiWrapper := api.Wrapper{Auth: auth, SPService: spService, CustomerService: customerService, CredentialService: credentialService}
-	//
-	//api.RegisterHandlers(e, apiWrapper)
+
+	// Initialize wrapper
+	apiWrapper := api.Wrapper{Auth: auth}
+	api.RegisterHandlers(e, apiWrapper)
 
 	// Setup asset serving:
 	// Check if we use live mode from the file system or using embedded files
