@@ -2,13 +2,14 @@ package api
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/nuts-foundation/go-did/did"
+	"github.com/nuts-foundation/nuts-pgo-demo/domain/accounts"
 	"github.com/nuts-foundation/nuts-pgo-demo/domain/types"
 	"net/http"
 )
 
 type Wrapper struct {
-	Auth auth
+	Auth           auth
+	AccountService accounts.Service
 }
 
 func (w Wrapper) CreateAccount(ctx echo.Context) error {
@@ -16,13 +17,12 @@ func (w Wrapper) CreateAccount(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return err
 	}
-	// use a fake DID to prevent parsing errors. Must be replaced with a real one.
-	fakeDID := did.MustParseDID("did:nuts:123")
-	newAccount := types.Account{Username: request.Username, Password: request.Password, DID: fakeDID}
-	_, err := w.Auth.accounts.AddAccount(newAccount)
+
+	_, err := w.AccountService.CreateAccount(request.Username, request.Password)
 	if err != nil {
 		return err
 	}
+
 	return ctx.NoContent(http.StatusNoContent)
 }
 

@@ -18,6 +18,7 @@ import (
 
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lestrrat-go/jwx/jwa"
+	vdrAPI "github.com/nuts-foundation/nuts-node/vdr/api/v1"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -117,8 +118,16 @@ func main() {
 
 	auth := api.NewAuth(config.sessionKey, accountRepository)
 
+	// Initialize repos
+	vdrClient := vdrAPI.HTTPClient{
+		ServerAddress: config.NutsNodeAddress,
+		Timeout:       apiTimeout,
+	}
+
+	accountService := accounts.Service{Repository: accountRepository, VDRClient: vdrClient}
+
 	// Initialize wrapper
-	apiWrapper := api.Wrapper{Auth: auth}
+	apiWrapper := api.Wrapper{Auth: auth, AccountService: accountService}
 	api.RegisterHandlersWithBaseURL(e, apiWrapper, "/web")
 
 	// Setup asset serving:
