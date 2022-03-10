@@ -4,7 +4,19 @@ info:
   version: 1.0.0
 
 paths:
-  /web/auth:
+  /account:
+    post:
+      operationId: createAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAccountRequest"
+      responses:
+        '204':
+          description: A new account has been created.
+  /auth:
     post:
       operationId: createSession
       requestBody:
@@ -23,7 +35,7 @@ paths:
         '403':
           description: Invalid credentials
 
-  /web/private:
+  /private:
     get:
       description: Checks whether the current session is valid. If not, the client should authenticate before calling other API operations.
       operationId: checkSession
@@ -35,6 +47,16 @@ paths:
 
 components:
   schemas:
+    CreateAccountRequest:
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: demo@nuts.nl
+        password:
+          type: string
     CreateSessionRequest:
       required:
         - username
@@ -51,3 +73,15 @@ components:
       properties:
         token:
           type: string
+    Account:
+      required:
+        - username
+        - did
+      properties:
+        username:
+          type: string
+        did:
+          type: string
+
+servers:
+  - url: "/web"

@@ -2,7 +2,6 @@
   <div class="flex justify-center">
 
     <div class="mt-12 bg-white shadow-sm border rounded-md w-96 p-8 flex flex-col">
-      <logo class="mx-auto my-2"></logo>
       <h1>Nuts Demo PGO</h1>
 
       <form class="w-full mt-4" @submit.stop.prevent="login">
@@ -31,6 +30,10 @@
           <button class="w-full btn btn-primary">
             Login
           </button>
+          <button class="w-full btn"
+            @click="$router.push({name: 'create-account'})">
+            Create new Account
+          </button>
         </div>
       </form>
     </div>
@@ -46,7 +49,7 @@ export default {
     return {
       loginError: '',
       credentials: {
-        username: 'demo@nuts.nl',
+        username: 'henk@hotmail.com',
         password: ''
       }
     }
@@ -65,7 +68,7 @@ export default {
       this.$router.push('/pgo/')
     },
     login () {
-      this.$api.post('web/auth', this.credentials)
+      this.$api.createSession({body: this.credentials})
         .then(responseData => {
           console.log('success!')
           localStorage.setItem('session', responseData.token)
@@ -83,7 +86,7 @@ export default {
   },
   mounted () {
     // Check if session still valid, if so just redirect to application
-    this.$api.get('web/private')
+    this.$api.checkSession()
       .then(() => this.redirectAfterLogin())
       .catch(() => {
         // session is invalid, need to authenticate

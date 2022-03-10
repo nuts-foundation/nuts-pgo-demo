@@ -10,16 +10,28 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (POST /web/auth)
+	// (POST /account)
+	CreateAccount(ctx echo.Context) error
+
+	// (POST /auth)
 	CreateSession(ctx echo.Context) error
 
-	// (GET /web/private)
+	// (GET /private)
 	CheckSession(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// CreateAccount converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateAccount(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.CreateAccount(ctx)
+	return err
 }
 
 // CreateSession converts echo context to params.
@@ -68,8 +80,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.POST(baseURL+"/web/auth", wrapper.CreateSession)
-	router.GET(baseURL+"/web/private", wrapper.CheckSession)
+	router.POST(baseURL+"/account", wrapper.CreateAccount)
+	router.POST(baseURL+"/auth", wrapper.CreateSession)
+	router.GET(baseURL+"/private", wrapper.CheckSession)
 
 }
 

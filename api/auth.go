@@ -2,6 +2,7 @@ package api
 
 import (
 	"crypto/ecdsa"
+	"github.com/nuts-foundation/nuts-pgo-demo/domain/accounts"
 	"log"
 	"time"
 
@@ -16,24 +17,23 @@ type UserAccount struct {
 }
 
 type auth struct {
-	sessionKey   *ecdsa.PrivateKey
-	userAccounts []UserAccount
+	sessionKey *ecdsa.PrivateKey
+	accounts   accounts.Repository
 }
 
-func NewAuth(key *ecdsa.PrivateKey, userAccounts []UserAccount) auth {
+func NewAuth(key *ecdsa.PrivateKey, accountRepo accounts.Repository) auth {
 	return auth{
-		sessionKey:   key,
-		userAccounts: userAccounts,
+		sessionKey: key,
+		accounts:   accountRepo,
 	}
 }
 
 func (auth auth) CheckCredentials(username, password string) bool {
-	for _, account := range auth.userAccounts {
-		if account.Username == username && account.Password == password {
-			return true
-		}
+	account, err := auth.accounts.FindByUserName(username)
+	if err != nil {
+		return false
 	}
-	return false
+	return account.Password == password
 }
 
 func (auth auth) CreateJWT(email string) ([]byte, error) {

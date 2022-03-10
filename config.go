@@ -26,14 +26,14 @@ const defaultConfigFile = "server.config.yaml"
 const defaultDBFile = "pgo.db"
 const defaultHTTPPort = 1305
 const defaultNutsNodeAddress = "http://localhost:1323"
-const defaultUsersFile = "user.json"
+const defaultAccountsFile = "accounts.json"
 
 func defaultConfig() Config {
 	return Config{
 		HTTPPort:        defaultHTTPPort,
 		DBFile:          defaultDBFile,
 		NutsNodeAddress: defaultNutsNodeAddress,
-		CustomersFile:   defaultUsersFile,
+		AccountsFile:    defaultAccountsFile,
 	}
 }
 
@@ -42,7 +42,7 @@ type Config struct {
 	DBFile          string      `koanf:"dbfile"`
 	HTTPPort        int         `koanf:"port"`
 	NutsNodeAddress string      `koanf:"nutsnodeaddr"`
-	CustomersFile   string      `koanf:"customersfile"`
+	AccountsFile    string      `koanf:"customersfile"`
 	Branding        Branding    `koanf:"branding"`
 	sessionKey      *ecdsa.PrivateKey
 }

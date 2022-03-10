@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/nuts-foundation/nuts-pgo-demo/api"
+	"github.com/nuts-foundation/nuts-pgo-demo/domain/accounts"
 	"io/fs"
 	"log"
 	"net/http"
@@ -84,7 +85,6 @@ func main() {
 	} else {
 		account = api.UserAccount{Username: config.Credentials.Username, Password: config.Credentials.Password}
 	}
-	auth := api.NewAuth(config.sessionKey, []api.UserAccount{account})
 	//
 	//// Initialize repos
 	//vdrClient := vdrAPI.HTTPClient{
@@ -107,6 +107,7 @@ func main() {
 	//	Repository:   customers.NewFlatFileRepository(config.CustomersFile),
 	//	DIDManClient: didmanClient,
 	//}
+	accountRepository := accounts.NewJsonFileRepository(config.AccountsFile)
 	//credentialService := credentials.Service{
 	//	NutsNodeAddr: config.NutsNodeAddress,
 	//	SPService:    spService,
@@ -114,9 +115,11 @@ func main() {
 	//}
 	//
 
+	auth := api.NewAuth(config.sessionKey, accountRepository)
+
 	// Initialize wrapper
 	apiWrapper := api.Wrapper{Auth: auth}
-	api.RegisterHandlers(e, apiWrapper)
+	api.RegisterHandlersWithBaseURL(e, apiWrapper, "/web")
 
 	// Setup asset serving:
 	// Check if we use live mode from the file system or using embedded files

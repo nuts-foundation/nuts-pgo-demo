@@ -1,0 +1,90 @@
+basePath: /web
+definitions:
+  Account:
+    properties:
+      did:
+        type: string
+      username:
+        type: string
+    required:
+      - username
+      - did
+  CreateAccountRequest:
+    properties:
+      password:
+        type: string
+      username:
+        example: demo@nuts.nl
+        type: string
+    required:
+      - username
+      - password
+  CreateSessionRequest:
+    properties:
+      password:
+        type: string
+      username:
+        example: demo@nuts.nl
+        type: string
+    required:
+      - username
+      - password
+  CreateSessionResponse:
+    properties:
+      token:
+        type: string
+    required:
+      - token
+info:
+  title: Nuts Demo PGO
+  version: 1.0.0
+paths:
+  /account:
+    post:
+      consumes:
+        - application/json
+      operationId: createAccount
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateAccountRequest'
+      responses:
+        '204':
+          description: A new account has been created.
+  /auth:
+    post:
+      consumes:
+        - application/json
+      operationId: createSession
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateSessionRequest'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A session was succesfully created
+          schema:
+            $ref: '#/definitions/CreateSessionResponse'
+        '403':
+          description: Invalid credentials
+  /private:
+    get:
+      description: >-
+        Checks whether the current session is valid. If not, the client should
+        authenticate before calling other API operations.
+      operationId: checkSession
+      parameters: []
+      responses:
+        '204':
+          description: The session is valid.
+        '400':
+          description: The session is invalid.
+swagger: '2.0'
+x-components: {}
+

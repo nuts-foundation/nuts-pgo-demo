@@ -1,0 +1,3 @@
+<template>
+  Consents
+</template>
